@@ -1,6 +1,5 @@
-var game = null;
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});;
 var players = {};
-var myId;
 
 // Game vars
 var cursors;
@@ -9,26 +8,25 @@ var cursors;
 // drives game logic
 
 var socket = io();
-console.log(socket);
-
 
 // Initial event - emitted on successful connection
 socket.on('newPlayer', function(data) {
-  if(!game) {
-    myData = data;
-    game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
-  } else {
-    addPlayer(data.id, data.x, data.y);
-  }
+  // if(!game) {
+  //   socket = data;
+  //   game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+  // } else {
+  //   addPlayer(data.id, data.x, data.y);
+  // }
+  console.log('Hit new player event');
+  addPlayer(data.id, data.x, data.y);
 });
 
 // Receives list of connected clients - emitted after 'readyForPlayers'
 socket.on('givePlayersList', function(playerList) {
-  console.log(playerList);
 
   for(var i = 0; i < playerList.length; i++) {
-    var id = playerList[i];
-    if(id !== myData.id) {
+    var id = playerList[i].substring(2, playerList[i].length);
+    if(id !== socket.id) {
       addPlayer(id);
     }
   }
@@ -36,6 +34,8 @@ socket.on('givePlayersList', function(playerList) {
 
 socket.on('startMovement', function(peerData) {
   var peer = players[peerData.id];
+  console.log(players);
+  console.log(peerData);
   peer.x = peerData.x;
   peer.y = peerData.y;
 
@@ -77,7 +77,7 @@ function preload() {
 function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
-  addPlayer(myData.id, myData.x, myData.y);
+  addPlayer(socket.id, 400, 300);
 
   cursors = game.input.keyboard.createCursorKeys();
 
@@ -89,95 +89,93 @@ function create() {
 function handleMovement() {
   cursors.left.onDown.add(function() {
 
-    console.log('button is down');
-
-    players[myData.id].body.velocity.x = -100;
+    players[socket.id].body.velocity.x = -100;
 
     socket.emit('startMovement', {
-      id: myData.id,
+      id: socket.id,
       direction: 'left',
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      x: players[socket.id].x,
+      y: players[socket.id].y
     })
   });
 
   cursors.left.onUp.add(function() {
 
-    players[myData.id].body.velocity.x = 0;
+    players[socket.id].body.velocity.x = 0;
 
     socket.emit('stopMovement', {
-      id: myData.id,
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      id: socket.id,
+      x: players[socket.id].x,
+      y: players[socket.id].y
     });
   });
 
   cursors.right.onDown.add(function() {
 
-    players[myData.id].body.velocity.x = 100;
+    players[socket.id].body.velocity.x = 100;
 
     socket.emit('startMovement', {
-      id: myData.id,
+      id: socket.id,
       direction: 'right',
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      x: players[socket.id].x,
+      y: players[socket.id].y
     })
   });
 
   cursors.right.onUp.add(function() {
 
-    players[myData.id].body.velocity.x = 0;
+    players[socket.id].body.velocity.x = 0;
 
     socket.emit('stopMovement', {
-      id: myData.id,
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      id: socket.id,
+      x: players[socket.id].x,
+      y: players[socket.id].y
     });
   });
 
   cursors.up.onDown.add(function() {
 
-    players[myData.id].body.velocity.y = -100;
+    players[socket.id].body.velocity.y = -100;
 
     socket.emit('startMovement', {
-      id: myData.id,
+      id: socket.id,
       direction: 'up',
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      x: players[socket.id].x,
+      y: players[socket.id].y
     })
   });
 
   cursors.up.onUp.add(function() {
 
-    players[myData.id].body.velocity.y = 0;
+    players[socket.id].body.velocity.y = 0;
 
     socket.emit('stopMovement', {
-      id: myData.id,
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      id: socket.id,
+      x: players[socket.id].x,
+      y: players[socket.id].y
     });
   });
 
   cursors.down.onDown.add(function() {
 
-    players[myData.id].body.velocity.y = 100;
+    players[socket.id].body.velocity.y = 100;
 
     socket.emit('startMovement', {
-      id: myData.id,
+      id: socket.id,
       direction: 'down',
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      x: players[socket.id].x,
+      y: players[socket.id].y
     })
   });
 
   cursors.down.onUp.add(function() {
 
-    players[myData.id].body.velocity.y = 0;
+    players[socket.id].body.velocity.y = 0;
 
     socket.emit('stopMovement', {
-      id: myData.id,
-      x: players[myData.id].x,
-      y: players[myData.id].y
+      id: socket.id,
+      x: players[socket.id].x,
+      y: players[socket.id].y
     });
   });
 }
