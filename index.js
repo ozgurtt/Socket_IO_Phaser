@@ -12,12 +12,12 @@ app.get('/', function(req, res) {
 });
 
 io.on('connection', function(socket) {
-  console.log('User Connected');
+  console.log('User Connected', socket.client.id);
 
-  io.emit('newPlayer', {
-    id: socket.id,
-    x: random.integer(50, 750),
-    y: random.integer(50, 550)
+  socket.broadcast.emit('newPlayer', {
+    id: socket.client.id.substring(2, socket.client.id.length),
+    x: 400,
+    y: 300
   });
 
   socket.on('readyForPlayers', function() {
@@ -28,6 +28,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('startMovement', function(playerData) {
+    console.log(playerData.id);
     socket.broadcast.emit('startMovement', playerData);
   });
 
