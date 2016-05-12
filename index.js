@@ -28,12 +28,8 @@ io.on('connection', function(socket) {
     });
   });
 
-  socket.on('startMovement', function(playerData) {
-    socket.broadcast.emit('startMovement', playerData);
-  });
-
-  socket.on('stopMovement', function(playerData) {
-    socket.broadcast.emit('stopMovement', playerData);
+  socket.on('movement', function(playerData) {
+    socket.broadcast.emit('movement', playerData);
   });
 
   socket.on('disconnect', function(){
