@@ -14,21 +14,21 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket) {
   console.log('User Connected', socket.client.id);
 
-  socket.broadcast.emit('newPlayer', {
-    id: socket.client.id.substring(2, socket.client.id.length),
-    x: 400,
-    y: 300
+  socket.on('newPlayer', function(newPlayerData) {
+    socket.broadcast.emit('newPlayer', {
+      id: newPlayerData.id,
+      x: newPlayerData.x,
+      y: newPlayerData.y
+    });
   });
 
   socket.on('readyForPlayers', function() {
-    console.log('Ready for Players');
     io.of('/').clients(function(error, clients) {
       socket.emit('givePlayersList', clients);
     });
   });
 
   socket.on('startMovement', function(playerData) {
-    console.log(playerData.id);
     socket.broadcast.emit('startMovement', playerData);
   });
 
@@ -37,11 +37,14 @@ io.on('connection', function(socket) {
   });
 
   socket.on('disconnect', function(){
-    console.log('user disconnected');
-    socket.broadcast.emit('removePlayer', {id: socket.id});
+    console.log('User Disconnected', socket.client.id);
+    socket.broadcast.emit('removePlayer', {id: socket.client.id});
   });
 });
 
-http.listen(3000, function() {
+// Alter port for heroku
+var port = process.env.PORT || 3000;
+
+http.listen(port, function() {
   console.log('Listening on port 3000');
 });

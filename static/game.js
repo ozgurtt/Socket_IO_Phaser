@@ -9,15 +9,16 @@ var cursors;
 
 var socket = io();
 
+socket.on('connect', function() {
+  socket.emit('newPlayer', {
+    id: socket.id,
+    x: 400,
+    y: 300
+  });
+});
+
 // Initial event - emitted on successful connection
 socket.on('newPlayer', function(data) {
-  // if(!game) {
-  //   socket = data;
-  //   game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
-  // } else {
-  //   addPlayer(data.id, data.x, data.y);
-  // }
-  console.log('Hit new player event');
   addPlayer(data.id, data.x, data.y);
 });
 
@@ -34,8 +35,6 @@ socket.on('givePlayersList', function(playerList) {
 
 socket.on('startMovement', function(peerData) {
   var peer = players[peerData.id];
-  console.log(players);
-  console.log(peerData);
   peer.x = peerData.x;
   peer.y = peerData.y;
 
