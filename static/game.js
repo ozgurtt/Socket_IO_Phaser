@@ -28,7 +28,7 @@ socket.on('givePlayersList', function(playerList) {
   for(var i = 0; i < playerList.length; i++) {
     var id = playerList[i].substring(2, playerList[i].length);
     if(id !== socket.id) {
-      addPlayer(id);
+      addPlayer(id, 400, 300);
     }
   }
 });
@@ -62,7 +62,7 @@ socket.on('stopMovement', function(peerData) {
 // Receives id of disconnected client - removes sprite
 socket.on('removePlayer', function(data) {
   players[data.id].destroy();
-  players[data.id] = null;
+  delete players[data.id];
 });
 
 // Game Logic
