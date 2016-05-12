@@ -28,41 +28,23 @@ socket.on('givePlayersList', function(playerList) {
   for(var i = 0; i < playerList.length; i++) {
     var id = playerList[i].substring(2, playerList[i].length);
     if(id !== socket.id) {
-      addPlayer(id);
+      addPlayer(id, 400, 300);
     }
   }
 });
 
-socket.on('startMovement', function(peerData) {
+socket.on('movement', function(peerData) {
   var peer = players[peerData.id];
   peer.x = peerData.x;
   peer.y = peerData.y;
-
-  if(peerData.direction === 'left') {
-    peer.body.velocity.x = -100;
-  } else if(peerData.direction === 'right') {
-    peer.body.velocity.x = 100;
-  }
-
-  if(peerData.direction === 'up') {
-    peer.body.velocity.y = -100;
-  } else if(peerData.direction === 'down') {
-    peer.body.velocity.y = 100;
-  }
-});
-
-socket.on('stopMovement', function(peerData) {
-  var peer = players[peerData.id];
-  peer.x = peerData.x;
-  peer.y = peerData.y;
-  peer.body.velocity.x = 0;
-  peer.body.velocity.y = 0;
+  peer.body.velocity.x = peerData.velocityX;
+  peer.body.velocity.y = peerData.velocityY;
 });
 
 // Receives id of disconnected client - removes sprite
 socket.on('removePlayer', function(data) {
   players[data.id].destroy();
-  players[data.id] = null;
+  delete players[data.id];
 });
 
 // Game Logic
@@ -90,9 +72,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.x = -100;
 
-    socket.emit('startMovement', {
+    socket.emit('movement', {
       id: socket.id,
-      direction: 'left',
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     })
@@ -102,8 +85,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.x = 0;
 
-    socket.emit('stopMovement', {
+    socket.emit('movement', {
       id: socket.id,
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     });
@@ -113,9 +98,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.x = 100;
 
-    socket.emit('startMovement', {
+    socket.emit('movement', {
       id: socket.id,
-      direction: 'right',
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     })
@@ -125,8 +111,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.x = 0;
 
-    socket.emit('stopMovement', {
+    socket.emit('movement', {
       id: socket.id,
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     });
@@ -136,9 +124,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.y = -100;
 
-    socket.emit('startMovement', {
+    socket.emit('movement', {
       id: socket.id,
-      direction: 'up',
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     })
@@ -148,8 +137,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.y = 0;
 
-    socket.emit('stopMovement', {
+    socket.emit('movement', {
       id: socket.id,
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     });
@@ -159,9 +150,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.y = 100;
 
-    socket.emit('startMovement', {
+    socket.emit('movement', {
       id: socket.id,
-      direction: 'down',
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     })
@@ -171,8 +163,10 @@ function handleMovement() {
 
     players[socket.id].body.velocity.y = 0;
 
-    socket.emit('stopMovement', {
+    socket.emit('movement', {
       id: socket.id,
+      velocityX: players[socket.id].body.velocity.x,
+      velocityY: players[socket.id].body.velocity.y,
       x: players[socket.id].x,
       y: players[socket.id].y
     });
