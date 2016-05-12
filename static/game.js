@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});;
+var game;
 var players = {};
 
 // Game vars
@@ -10,6 +10,8 @@ var cursors;
 var socket = io();
 
 socket.on('connect', function() {
+  game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});;
+
   socket.emit('newPlayer', {
     id: socket.id,
     x: 400,
