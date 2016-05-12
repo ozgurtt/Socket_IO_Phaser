@@ -42,6 +42,7 @@ io.on('connection', function(socket) {
   });
 });
 
+// Alter port for heroku
 var port = process.env.PORT || 3000;
 
 http.listen(port, function() {
